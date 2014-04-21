@@ -15,9 +15,9 @@ test.html
 target
 
 # ExtJS4
-/libs/extjs4/
+/libs/extjs4/*
 !/libs/extjs4/README.md
 
 # CodeMirror
-/libs/codemirror/
+/libs/codemirror/*
 !/libs/codemirror/README.md
