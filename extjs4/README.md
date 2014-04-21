@@ -1,1 +1,0 @@
-download ExtJS 4.x from http://www.sencha.com/ and extract here
