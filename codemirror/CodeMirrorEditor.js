@@ -1,5 +1,5 @@
 /**
- * @class Ext.ux.CodeMirrorEditor
+ * @class Ext.ux.codemirror.CodeMirrorEditor
  * @extends Ext.panel.Panel
  * Converts a panel into a code mirror editor with toolbar
  *
@@ -7,46 +7,41 @@
  * @version 0.1
  */
 
-    // Define a set of code type configurations
-Ext.ns('Ext.ux.panel.CodeMirrorConfig');
-Ext.apply(Ext.ux.panel.CodeMirrorConfig, {
-    cssPath: "CodeMirror-0.63/css/",
-    jsPath: "CodeMirror-0.63/js/"
-});
-Ext.apply(Ext.ux.panel.CodeMirrorConfig, {
-    parser: {
-        defo: { // js code
-            parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
-            stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css"
-        },
-        css: {
-            parserfile: ["parsecss.js"],
-            stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css"
-        },
-        js: {
-            parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
-            stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css"
-        },
-        php: {
-            parserfile: ["tokenizephp.js", "parsephp.js"],
-            stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"
-        },
-        html: {
-            parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "tokenizephp.js", "parsephp.js", "parsephphtmlmixed.js"],
-            stylesheet: [Ext.ux.panel.CodeMirrorConfig.cssPath + "xmlcolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"]
+Ext.define('Ext.ux.codemirror.CodeMirrorEditor',{
+    extend : 'Ext.panel.Panel',
 
-        },
-        mixed: {
-            parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "tokenizephp.js", "parsephp.js", "parsephphtmlmixed.js"],
-            stylesheet: [Ext.ux.panel.CodeMirrorConfig.cssPath + "xmlcolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"]
+    config : {
+        cssPath: "CodeMirror-0.63/css/",
+        jsPath: "CodeMirror-0.63/js/",
+        parser: {
+            defo: { // js code
+                parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
+                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css"
+            },
+            css: {
+                parserfile: ["parsecss.js"],
+                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css"
+            },
+            js: {
+                parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
+                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css"
+            },
+            php: {
+                parserfile: ["tokenizephp.js", "parsephp.js"],
+                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"
+            },
+            html: {
+                parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "tokenizephp.js", "parsephp.js", "parsephphtmlmixed.js"],
+                stylesheet: [Ext.ux.panel.CodeMirrorConfig.cssPath + "xmlcolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"]
 
+            },
+            mixed: {
+                parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "tokenizephp.js", "parsephp.js", "parsephphtmlmixed.js"],
+                stylesheet: [Ext.ux.panel.CodeMirrorConfig.cssPath + "xmlcolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"]
+
+            }
         }
-    }
-});
-
-Ext.ns('Ext.ux.panel.CodeMirror');
-Ext.ux.panel.CodeMirror = Ext.extend(Ext.Panel, {
-
+    },
 
     sourceCode: '/* Default code */',
     initComponent: function() {
@@ -247,6 +242,3 @@ Ext.ux.panel.CodeMirror = Ext.extend(Ext.Panel, {
         }
     }
 });
-
-
-Ext.reg('uxCodeMirrorPanel', Ext.ux.panel.CodeMirror);
