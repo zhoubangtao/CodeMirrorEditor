@@ -17,3 +17,7 @@ target
 # ExtJS4
 /extjs4/
 !/extjs4/README.md
+
+# CodeMirror
+/codemirror/
+!/codemirror/README.md
