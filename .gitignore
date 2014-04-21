@@ -14,3 +14,6 @@ test.html
 .settings
 target
 
+# ExtJS4
+/extjs4/
+!/extjs4/README.md
