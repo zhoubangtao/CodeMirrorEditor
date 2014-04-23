@@ -9,99 +9,39 @@
 
 Ext.define('Ext.ux.codemirror.CodeMirrorEditor',{
     extend : 'Ext.panel.Panel',
+    alias : 'widget.codemirror',
 
     config : {
-        cssPath: "CodeMirror-0.63/css/",
-        jsPath: "CodeMirror-0.63/js/",
-        parser: {
-            defo: { // js code
-                parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
-                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css"
-            },
-            css: {
-                parserfile: ["parsecss.js"],
-                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css"
-            },
-            js: {
-                parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
-                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css"
-            },
-            php: {
-                parserfile: ["tokenizephp.js", "parsephp.js"],
-                stylesheet: Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"
-            },
-            html: {
-                parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "tokenizephp.js", "parsephp.js", "parsephphtmlmixed.js"],
-                stylesheet: [Ext.ux.panel.CodeMirrorConfig.cssPath + "xmlcolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"]
 
-            },
-            mixed: {
-                parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "tokenizephp.js", "parsephp.js", "parsephphtmlmixed.js"],
-                stylesheet: [Ext.ux.panel.CodeMirrorConfig.cssPath + "xmlcolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "jscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "csscolors.css", Ext.ux.panel.CodeMirrorConfig.cssPath + "phpcolors.css"]
+        /* CodeMirror Folder, this is base on CodeMirror 4.0*/
+        cmFolder : undefined,
 
-            }
+        /* Mime modes Mapping*/
+        mimeModes: {
+            "text/x-sql" : "sql",
+            "text/x-plsql" : "sql",
+            "text/x-mssql" : "sql",
+            "text/x-mysql" : "sql",
+            "text/x-hive" : "sql"
         }
     },
 
     sourceCode: '/* Default code */',
+
     initComponent: function() {
         // this property is used to determine if the source content changes
         this.contentChanged = false;
-        var oThis = this;
-        this.debugWindow = new Ext.Window({
-            title: 'Debug',
-            width: 500,
-            layout: 'border',
-            closeAction: 'hide',
-            height: 160,
-            items: [new Ext.grid.GridPanel({
-                layout: 'fit',
-                region: 'center',
-                border: false,
-                listeners: {
-                    rowclick: function(grid) {
-                        var oData = grid.getSelectionModel().getSelected().data;
-                        oThis.codeMirrorEditor.jumpToLine(oData.line);
-                    }
-                },
-                store: new Ext.data.Store({
-                    fields: [{
-                        name: 'line'
-                    }, {
-                        name: 'character'
-                    }, {
-                        name: 'reason'
-                    }]
-                }),
-                columns: [{
-                    id: 'line',
-                    header: 'Line',
-                    width: 60,
-                    sortable: true,
-                    dataIndex: 'line'
-                }, {
-                    id: 'character',
-                    header: 'Character',
-                    width: 60,
-                    sortable: true,
-                    dataIndex: 'character'
-                }, {
-                    header: 'Description',
-                    width: 240,
-                    sortable: true,
-                    dataIndex: 'reason'
-                }],
-                stripeRows: true
-            })]
+        var me = this;
+
+        // create a textarea as a property of the class
+        me.textarea = Ext.create('Ext.form.field.TextArea', {
+            readOnly : false,
+            value : me.sourceCode,
+            anchor : '100% 100%'
         });
 
-        Ext.apply(this, {
-            items: [{
-                xtype: 'textarea',
-                readOnly: false,
-                hidden: true,
-                value: this.sourceCode
-            }],
+        Ext.apply(me, {
+            items: [me.textarea],
             tbar: [{
                 text: 'Save',
                 handler: this.triggerOnSave,
@@ -162,13 +102,14 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor',{
     },
 
     triggerOnSave: function(){
-        this.setTitleClass(true);
-        var sNewCode = this.codeMirrorEditor.getCode();
+        var me = this;
+        me.setTitleClass(true);
+        var newCode = me.codeMirrorEditor.getCode();
 
-        Ext.state.Manager.set("edcmr_"+this.itemId+'_lnmbr', this.codeMirrorEditor.currentLine());
+        Ext.state.Manager.set("edcmr_"+me.itemId+'_lnmbr', me.codeMirrorEditor.currentLine());
 
-        this.oldSourceCode = sNewCode;
-        this.onSave(arguments[0] || false);
+        me.oldSourceCode = newCode;
+        me.onSave(arguments[0] || false);
     },
 
     onRender: function() {
@@ -184,18 +125,17 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor',{
     /** @private */
     triggerCodeEditor: function() {
         //this.codeMirrorEditor;
-        var oThis = this;
-        var oCmp = this.findByType('textarea')[0];
+        var me = this;
+
         var editorConfig = Ext.applyIf(this.codeMirror || {}, {
             height: "100%",
             width: "100%",
             lineNumbers: true,
             textWrapping: false,
-            content: oCmp.getValue(),
+            content: me.textarea.getValue(),
             indentUnit: 4,
             tabMode: 'shift',
-            readOnly: oCmp.readOnly,
-            path: Ext.ux.panel.CodeMirrorConfig.jsPath,
+            readOnly: me.textarea.readOnly,
             autoMatchParens: true,
             initCallback: function(editor) {
                 editor.win.document.body.lastChild.scrollIntoView();
@@ -208,27 +148,35 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor',{
                 }
             },
             onChange: function() {
-                var sCode = oThis.codeMirrorEditor.getCode();
-                oCmp.setValue(sCode);
+                var sCode = me.codeMirrorEditor.getCode();
+                me.textarea.setValue(sCode);
 
-                if(oThis.oldSourceCode == sCode){
-                    oThis.setTitleClass(true);
+                if(me.oldSourceCode == sCode){
+                    me.setTitleClass(true);
                 }else{
-                    oThis.setTitleClass();
+                    me.setTitleClass();
                 }
 
             }
         });
 
-        var sParserType = oThis.parser || 'defo';
+        var sParserType = me.parser || 'defo';
         editorConfig = Ext.applyIf(editorConfig, Ext.ux.panel.CodeMirrorConfig.parser[sParserType]);
 
         this.codeMirrorEditor = new CodeMirror.fromTextArea( Ext.getDom(oCmp.id).id, editorConfig);
-
+        // set size of codeMirrorEditor
+        me.codeMirrorEditor.setSize("100%", me.body.getHeight());
         // Disable spell check button for non-js content
         if (sParserType == 'js' || sParserType == 'css') {
             this.getTopToolbar().getComponent('spellChecker').enable();
         }
+    },
+
+    afterLayout : function() {
+        var me = this;
+        me.callParent();
+        // reset the size of codeMirrorEditor when resize
+        me.codeMirrorEditor.setSize("100%", me.body.getHeight());
     },
 
     setTitleClass: function(){
