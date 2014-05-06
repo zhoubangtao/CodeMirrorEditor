@@ -1,0 +1,1 @@
+download CodeMirror from http://codemirror.net/ and extract here

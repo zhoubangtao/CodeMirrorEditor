@@ -1,6 +1,6 @@
 /**
  * Ext.ux.panel.CodeMirror example
- * @author Dan Ungureanu - ungureanu.web@gmail.com / http://www.devweb.ro
+ * @author Bangtao Zhou - zhoubangtao@gmail.com / http://zhoubangtao.org
  */
 
 Ext.Loader.setConfig({

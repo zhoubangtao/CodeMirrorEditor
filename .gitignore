@@ -16,8 +16,8 @@ target
 
 # ExtJS4
 /libs/extjs4/*
-!/libs/extjs4/README.md
+!/libs/extjs4/README.markdown
 
 # CodeMirror
 /libs/codemirror/*
-!/libs/codemirror/README.md
+!/libs/codemirror/README.markdown
