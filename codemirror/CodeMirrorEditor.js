@@ -1,5 +1,5 @@
 /**
- * @class Ext.ux.codemirror.codeMirror
+ * @class Ext.ux.codemirror.CodeMirrorEditor
  * @extends Ext.panel.Panel
  * Converts a panel into a code mirror editor with toolbar
  *
@@ -7,7 +7,7 @@
  * @version 0.1
  */
 
-Ext.define('Ext.ux.codemirror.codeMirror', {
+Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
   extend: 'Ext.panel.Panel',
   alias: 'widget.codemirror',
 
