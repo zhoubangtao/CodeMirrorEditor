@@ -1,39 +1,64 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Ext.ux.codemirror.CodeMirrorEditor</title>
-<link rel="stylesheet" type="text/css" href="../libs/extjs4/resources/css/ext-all.css" />
-
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Ext.ux.codemirror.CodeMirrorEditor</title>
+    <link rel="stylesheet" type="text/css" href="../libs/extjs4/resources/css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="../libs/codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" type="text/css" href="../libs/codemirror/addon/hint/show-hint.css"/>
+    <link rel="stylesheet" type="text/css" href="../libs/codemirror/theme/ambiance.css"/>
     <script type="text/javascript" src="../libs/extjs4/ext-all.js"></script>
 
-    <script type="text/javascript" src="example.js"></script>
+    <script type="text/javascript" src="../libs/seajs/dist/sea.js"></script>
+    <script type="text/javascript" src="../libs/codemirror/lib/codemirror.js"></script>
 
     <style type="text/css">
-    .x-panel-body p {
-        margin:10px;
-    }
-    .container {
-        padding:10px;
-    }
-	em.cfg { font-style: italic; font-weight: bold;}
-    
-.CodeMirror-line-numbers {
-    width: 2.2em;
-    color: #aaa;
-    background-color: #eee;
-    text-align: right;
-    margin: 0;
-    padding: 0.4em;
-    font-family: monospace;
-    font-size: 10pt;
-}
+        .x-panel-body p {
+            margin: 10px;
+        }
+
+        .container {
+            padding: 10px;
+        }
+
+        em.cfg {
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .CodeMirror-line-numbers {
+            width: 2.2em;
+            color: #aaa;
+            background-color: #eee;
+            text-align: right;
+            margin: 0;
+            padding: 0.4em;
+            font-family: monospace;
+            font-size: 10pt;
+        }
     </style>
+
+    <script type="text/javascript">
+        Ext.Loader.setConfig({
+            enabled: true,
+            paths: {
+                "CodeMirror": "../libs/codemirror/",
+                "Ext.ux.codemirror": "../codemirror/"
+            }
+        });
+        Ext.require(["Ext.ux.codemirror.CodeMirrorEditor"]);
+    </script>
+
+    <!--<script type="text/javascript" src="../codemirror/CodeMirrorEditor.js"></script> -->
+
+
 </head>
 <body>
 <!--  <script type="text/javascript" src="ext-2.0.2/examples/examples.js"></script>EXAMPLES -->
 <h1>Ext.ux.codemirror.CodeMirrorEditor</h1>
-<p>The js is not minified so it is readable. See <a href="example.js">example.js</a>. See extension <a href="../codemirror/CodeMirrorEditor.js">CodeMirrorEditor.js</a></p>
+<script type="text/javascript" src="example.js"></script>
+<p>The js is not minified so it is readable. See <a href="example.js">example.js</a>. See extension <a
+        href="../codemirror/CodeMirrorEditor.js">CodeMirrorEditor.js</a></p>
 
 <div id="panel-basic" class="container">
 </div>

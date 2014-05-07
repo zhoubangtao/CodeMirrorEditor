@@ -21,3 +21,7 @@ target
 # CodeMirror
 /libs/codemirror/*
 !/libs/codemirror/README.markdown
+
+# SeaJS
+/libs/seajs/*
+!/libs/seajs/README.markdown

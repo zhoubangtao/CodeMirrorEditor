@@ -41,6 +41,7 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
     });
 
     Ext.apply(me, {
+      layout : 'absolute',
       items: [me.textarea],
       tbar: [
         {
@@ -107,7 +108,7 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
       ]
     });
 
-    Ext.ux.panel.CodeMirror.superclass.initComponent.apply(this, arguments);
+    me.callParent(arguments);
   },
 
   triggerOnSave: function () {
@@ -123,7 +124,7 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
 
   onRender: function () {
     this.oldSourceCode = this.sourceCode;
-    Ext.ux.panel.CodeMirror.superclass.onRender.apply(this, arguments);
+    this.callParent(arguments);
     // trigger editor on afterlayout
     this.on('afterlayout', this.triggerCodeEditor, this, {
       single: true
@@ -169,9 +170,13 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
     });
 
     var sParserType = me.parser || 'defo';
-    editorConfig = Ext.applyIf(editorConfig, Ext.ux.panel.CodeMirrorConfig.parser[sParserType]);
-
-    this.codeMirrorEditor = new CodeMirror.fromTextArea(Ext.getDom(oCmp.id).id, editorConfig);
+    //editorConfig = Ext.applyIf(editorConfig, Ext.ux.panel.CodeMirrorConfig.parser[sParserType]);
+    editorConfig = Ext.applyIf(editorConfig, {
+      mode : "text/x-hive",
+      theme : "ambiance",
+      extraKeys: {"Alt-/": "autocomplete"}
+    });
+    this.codeMirrorEditor = new CodeMirror.fromTextArea(Ext.getDom(me.textarea.id + "-inputEl"), editorConfig);
     // set size of codeMirrorEditor
     me.codeMirrorEditor.setSize("100%", me.body.getHeight());
     // Disable spell check button for non-js content
@@ -196,5 +201,13 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
       //tabEl.addClass( "tab-changes" );
       this.contentChanged = true;
     }
+  },
+
+  /**
+   * dynamic load css file
+   * @param cssFilePath
+   */
+  loadCssFile : function (cssFilePath) {
+    Ext.core.DomHelper.append(Ext.getHead(), {tag: 'link', type: 'text/css', rel: 'stylesheet', href: cssFilePath});
   }
 });
