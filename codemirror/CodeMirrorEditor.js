@@ -1,5 +1,5 @@
 /**
- * @class Ext.ux.codemirror.CodeMirrorEditor
+ * @class Ext.ux.codemirror.codeMirror
  * @extends Ext.panel.Panel
  * Converts a panel into a code mirror editor with toolbar
  *
@@ -7,9 +7,13 @@
  * @version 0.1
  */
 
-Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
+Ext.define('Ext.ux.codemirror.codeMirror', {
   extend: 'Ext.panel.Panel',
   alias: 'widget.codemirror',
+
+  requires : [
+    'Ext.ux.codemirror.Toolbar'
+  ],
 
   config: {
 
@@ -26,6 +30,16 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
     }
   },
 
+  /**
+   * @cfg {Boolean} prependButtons
+   * true to insert any configured items _before_ the editor buttons.
+   */
+  prependButtons: false,
+
+  /**
+   * @cfg {String} sourceCode
+   * config the default value of the editor
+   */
   sourceCode: '/* Default code */',
 
   initComponent: function () {
@@ -43,80 +57,100 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
     Ext.apply(me, {
       layout : 'absolute',
       items: [me.textarea],
-      tbar: [
-        {
-          text: 'Save',
-          handler: this.triggerOnSave,
-          scope: this
-        },
-        {
-          text: 'Undo',
-          handler: function () {
-            this.codeMirrorEditor.undo();
-          },
-          scope: this
-        },
-        {
-          text: 'Redo',
-          handler: function () {
-            this.codeMirrorEditor.redo();
-          },
-          scope: this
-        },
-        {
-          text: 'Indent',
-          handler: function () {
-            this.codeMirrorEditor.reindent();
-          },
-          scope: this
-        },
-        {
-          itemId: 'spellChecker',
-          disabled: true,
-          text: 'JS Lint',
-          handler: function () {
-            try {
-              var bValidates = JSLINT(this.findByType('textarea')[0].getValue());
-
-              var oStore = this.debugWindow.findByType('grid')[0].getStore();
-              if (!bValidates) {
-                var aErrorData = [];
-
-                for (var err in JSLINT.errors) {
-                  if (JSLINT.errors.hasOwnProperty(err) && (JSLINT.errors[err] !== null)) {
-                    aErrorData.push([JSLINT.errors[err].line, JSLINT.errors[err].character, JSLINT.errors[err].reason]);
-                  }
-                }
-
-                oStore.loadData(aErrorData, false);
-                this.debugWindow.show();
-
-              }
-              else {
-
-                oStore.loadData([
-                  [1, 1, 'Congratulation! No errors found.']
-                ], false);
-                this.debugWindow.show();
-              }
-            } catch (e) {
-            }
-
-          },
-          scope: this
-        }
-      ]
+      tbar: {
+        xtype : 'codemirrortoolbar',
+        editor : me
+      }
     });
 
     me.callParent(arguments);
+
+    me.addEvents(
+      /**
+       * @event change
+       * Fires every time the content of the editor is changed
+       *
+       * from and to are the positions (in the pre-change coordinate system)
+       * where the change started and ended (for example, it might be {ch:0, line:18} if the position is at the beginning of line #19).
+       * text is an array of strings representing the text that replaced the changed range (split by line).
+       * removed is the text that used to be between from and to, which is overwritten by this change.
+       * @param {Ext.ux.codemirror.codeMirror} this
+       * @param {Object} changeObj is a {from, to, text, removed, origin} object
+       *
+       */
+      'change',
+
+      /**
+       * @event beforechange
+       * Fires just before the active page is changed. Return false to prevent the active page from being changed.
+       * @param {Ext.toolbar.Paging} this
+       * @param {Number} page The page number that will be loaded on change
+       */
+      'beforechange',
+      /**
+       * @event beforestartedit
+       * Fires when editing is initiated, but before the value changes.  Editing can be canceled by returning
+       * false from the handler of this event.
+       * @param {Ext.Editor} this
+       * @param {Ext.Element} boundEl The underlying element bound to this editor
+       * @param {Object} value The field value being set
+       */
+      'beforestartedit',
+
+      /**
+       * @event startedit
+       * Fires when this editor is displayed
+       * @param {Ext.Editor} this
+       * @param {Ext.Element} boundEl The underlying element bound to this editor
+       * @param {Object} value The starting field value
+       */
+      'startedit',
+
+      /**
+       * @event beforecomplete
+       * Fires after a change has been made to the field, but before the change is reflected in the underlying
+       * field.  Saving the change to the field can be canceled by returning false from the handler of this event.
+       * Note that if the value has not changed and ignoreNoChange = true, the editing will still end but this
+       * event will not fire since no edit actually occurred.
+       * @param {Ext.Editor} this
+       * @param {Object} value The current field value
+       * @param {Object} startValue The original field value
+       */
+      'beforecomplete',
+      /**
+       * @event complete
+       * Fires after editing is complete and any changed value has been written to the underlying field.
+       * @param {Ext.Editor} this
+       * @param {Object} value The current field value
+       * @param {Object} startValue The original field value
+       */
+      'complete',
+      /**
+       * @event canceledit
+       * Fires after editing has been canceled and the editor's value has been reset.
+       * @param {Ext.Editor} this
+       * @param {Object} value The user-entered field value that was discarded
+       * @param {Object} startValue The original field value that was set back into the editor after cancel
+       */
+      'canceledit',
+      /**
+       * @event specialkey
+       * Fires when any key related to navigation (arrows, tab, enter, esc, etc.) is pressed.  You can check
+       * {@link Ext.EventObject#getKey} to determine which key was pressed.
+       * @param {Ext.Editor} this
+       * @param {Ext.form.field.Field} The field attached to this editor
+       * @param {Ext.EventObject} event The event object
+       */
+      'specialkey'
+    );
   },
 
   triggerOnSave: function () {
     var me = this;
     me.setTitleClass(true);
-    var newCode = me.codeMirrorEditor.getCode();
+    var newCode = me.codeMirror.getCode();
 
-    Ext.state.Manager.set("edcmr_" + me.itemId + '_lnmbr', me.codeMirrorEditor.currentLine());
+    Ext.state.Manager.set("edcmr_" + me.itemId + '_lnmbr', me.codeMirror.currentLine());
 
     me.oldSourceCode = newCode;
     me.onSave(arguments[0] || false);
@@ -136,7 +170,7 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
   triggerCodeEditor: function () {
     var me = this;
 
-    var editorConfig = Ext.applyIf(this.codeMirror || {}, {
+    var editorConfig = Ext.applyIf(this.codeMirrorConfig || {}, {
       height: "100%",
       width: "100%",
       lineNumbers: true,
@@ -157,7 +191,7 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
         }
       },
       onChange: function () {
-        var sCode = me.codeMirrorEditor.getCode();
+        var sCode = me.codeMirror.getCode();
         me.textarea.setValue(sCode);
 
         if (me.oldSourceCode == sCode) {
@@ -176,9 +210,9 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
       theme : "ambiance",
       extraKeys: {"Alt-/": "autocomplete"}
     });
-    this.codeMirrorEditor = new CodeMirror.fromTextArea(Ext.getDom(me.textarea.id + "-inputEl"), editorConfig);
-    // set size of codeMirrorEditor
-    me.codeMirrorEditor.setSize("100%", me.body.getHeight());
+    this.codeMirror = new CodeMirror.fromTextArea(Ext.getDom(me.textarea.id + "-inputEl"), editorConfig);
+    // set size of codeMirror
+    me.codeMirror.setSize("100%", me.body.getHeight());
     // Disable spell check button for non-js content
     if (sParserType == 'js' || sParserType == 'css') {
       this.getTopToolbar().getComponent('spellChecker').enable();
@@ -188,8 +222,8 @@ Ext.define('Ext.ux.codemirror.CodeMirrorEditor', {
   afterLayout: function () {
     var me = this;
     me.callParent();
-    // reset the size of codeMirrorEditor when resize
-    me.codeMirrorEditor.setSize("100%", me.body.getHeight());
+    // reset the size of codeMirror when resize
+    me.codeMirror.setSize("100%", me.body.getHeight());
   },
 
   setTitleClass: function () {
