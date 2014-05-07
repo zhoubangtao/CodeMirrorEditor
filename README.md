@@ -8,3 +8,4 @@ Requirements
 
 * ExtJS ~> 4 (download and extract to libs/extjs4)
 * CodeMirror ~> 4 (download and extract to libs/codemirror)
+
